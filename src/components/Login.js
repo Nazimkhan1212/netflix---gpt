@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Header from "./Header";
 import { useRef, useState } from "react";
 import { checkValidData } from "../utils/validate";
@@ -7,10 +7,14 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
+import { useDispatch } from "react-redux";
+import { addUser } from "../slices/userSlice";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const name = useRef(null);
   const email = useRef(null);
@@ -27,7 +31,9 @@ const Login = () => {
       name?.current?.value
     );
     setErrorMessage(message);
+
     if (message) return;
+
     if (!isSignIn) {
       createUserWithEmailAndPassword(
         auth,
@@ -37,8 +43,10 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          console.log(user);
-          // ...
+          user.displayName = name.current.value;
+          const { uid, email, displayName } = user;
+          dispatch(addUser({ uid, email, displayName }));
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -55,8 +63,7 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(user);
-          // ...
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
