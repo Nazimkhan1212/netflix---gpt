@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import Header from "./Header";
 import { useRef, useState } from "react";
 import { checkValidData } from "../utils/validate";
@@ -9,12 +9,12 @@ import {
 import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../slices/userSlice";
+import { BG_URL } from "../utils/constants";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const name = useRef(null);
   const email = useRef(null);
@@ -46,11 +46,10 @@ const Login = () => {
           user.displayName = name.current.value;
           const { uid, email, displayName } = user;
           dispatch(addUser({ uid, email, displayName }));
-          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
-          const errorMessage = error.message;
+          // const errorMessage = error.message;
           setErrorMessage(errorCode);
           // ..
         });
@@ -62,24 +61,23 @@ const Login = () => {
       )
         .then((userCredential) => {
           // Signed in
-          const user = userCredential.user;
-          navigate("/browse");
+          // const user = userCredential.user;
         })
         .catch((error) => {
           const errorCode = error.code;
-          const errorMessage = error.message;
+          // const errorMessage = error.message;
           setErrorMessage(errorCode);
         });
     }
   };
   return (
-    <div>
+    <div className="min-h-screen min-w-full">
       <Header />
       <div>
         <img
-          className="absolute w-full min-h-screen"
+          src={BG_URL}
+          className="absolute max-h-full min-w-full"
           alt="Banner"
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/8d617e19-3c3c-4c28-8998-c9b14dbc7200/web/QA-en-20250901-TRIFECTA-perspective_7b869839-f340-4617-b7ce-eb61e001e7e5_small.jpg"
         />
       </div>
       <form
